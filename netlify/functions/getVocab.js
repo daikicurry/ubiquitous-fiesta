@@ -1,45 +1,36 @@
 const { Client } = require("@notionhq/client");
 
 exports.handler = async function(event, context) {
-    // CORSヘッダーの設定
     const headers = {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
     };
 
-    // OPTIONSリクエストへの対応
-    if (event.httpMethod === "OPTIONS") {
-        return {
-            statusCode: 200,
-            headers,
-            body: ""
-        };
-    }
-
     try {
-        // Notionクライアントの初期化
         const notion = new Client({
             auth: process.env.NOTION_API_TOKEN
         });
 
-        // データベースクエリの実行
+        // データベースからデータを取得
         const response = await notion.databases.query({
-            database_id: process.env.DATABASE_ID,
-            page_size: 100
+            database_id: process.env.DATABASE_ID
         });
 
-        // 成功時のレスポンス
+        // データの形式を整形（Notionの実際の構造に合わせる）
+        const formattedData = response.results.map(page => ({
+            english: page.properties['名前']?.title[0]?.plain_text || '',
+            japanese: page.properties['日本語訳']?.rich_text[0]?.plain_text || ''
+        })).filter(item => item.english && item.japanese); // 空のエントリを除外
+
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(response)
+            body: JSON.stringify({ results: formattedData })
         };
 
     } catch (error) {
         console.error("Error details:", error);
-        
-        // エラー時のレスポンス
         return {
             statusCode: 500,
             headers,
