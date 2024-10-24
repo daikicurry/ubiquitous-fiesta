@@ -1,0 +1,9 @@
+{
+  "name": "vocabulary-quiz",
+  "version": "1.0.0",
+  "description": "Notion-based vocabulary quiz app",
+  "main": "index.html",
+  "dependencies": {
+    "@notionhq/client": "^2.2.14"
+  }
+}
