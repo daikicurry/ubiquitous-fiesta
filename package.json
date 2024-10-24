@@ -5,5 +5,8 @@
   "main": "index.html",
   "dependencies": {
     "@notionhq/client": "^2.2.14"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^2.0.0"
   }
 }
